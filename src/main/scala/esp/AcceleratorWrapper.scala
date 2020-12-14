@@ -15,7 +15,6 @@
 package esp
 
 import chisel3._
-import chisel3.experimental.{RawModule, withClockAndReset}
 
 trait AcceleratorWrapperIO { this: RawModule =>
   val dmaWidth: Int
@@ -46,12 +45,15 @@ trait AcceleratorWrapperIO { this: RawModule =>
   // Number of 32-bit words to be read This can be converted to number of Bytes, but it was convenient since we design
   // accelerators in SytemC
   val dma_read_ctrl_data_length = IO(Output(UInt(32.W)))
+  // Size of the data tokens encoded according to AXI bus standard (e.g. double-word, word, half-word, byte).
+  val dma_read_ctrl_data_size = IO(Output(DmaSize.gen))
 
   // DMA Write control (same as Read)
   val dma_write_ctrl_ready = IO(Input(Bool()))
   val dma_write_ctrl_valid = IO(Output(Bool()))
   val dma_write_ctrl_data_index = IO(Output(UInt(32.W)))
   val dma_write_ctrl_data_length = IO(Output(UInt(32.W)))
+  val dma_write_ctrl_data_size = IO(Output(DmaSize.gen))
 
   // DMA Write data channel directly connected to the NoC queues
   val dma_write_chnl_ready = IO(Input(Bool()))
@@ -66,7 +68,7 @@ trait AcceleratorWrapperIO { this: RawModule =>
   */
 final class AcceleratorWrapper(val dmaWidth: Int, gen: Int => Implementation) extends RawModule with AcceleratorWrapperIO {
 
-  override lazy val desiredName = s"${acc.config.name}_${acc.implementationName}"
+  override lazy val desiredName = s"${acc.config.name}_${acc.implementationName}_dma$dmaWidth"
   val acc = withClockAndReset(clk, ~rst)(Module(gen(dmaWidth)))
 
   val conf_info = acc.io.config.map(a => IO(Input(a.cloneType)))
@@ -85,11 +87,13 @@ final class AcceleratorWrapper(val dmaWidth: Int, gen: Int => Implementation) ex
   dma_read_ctrl_valid           := acc.io.dma.readControl.valid
   dma_read_ctrl_data_index      := acc.io.dma.readControl.bits.index
   dma_read_ctrl_data_length     := acc.io.dma.readControl.bits.length
+  dma_read_ctrl_data_size       := acc.io.dma.readControl.bits.size
 
   acc.io.dma.writeControl.ready := dma_write_ctrl_ready
   dma_write_ctrl_valid          := acc.io.dma.writeControl.valid
   dma_write_ctrl_data_index     := acc.io.dma.writeControl.bits.index
   dma_write_ctrl_data_length    := acc.io.dma.writeControl.bits.length
+  dma_write_ctrl_data_size      := acc.io.dma.writeControl.bits.size
 
   dma_read_chnl_ready           := acc.io.dma.readChannel.ready
   acc.io.dma.readChannel.valid  := dma_read_chnl_valid
