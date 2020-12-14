@@ -29,7 +29,7 @@ trait CounterSpecification extends Specification {
    * accelerator configuration. At the Chisel level, this will be used to emit an [[esp.EspConfigAnnotation]] which will
    * be converted to an XML description by a custom FIRRTL transform, [[esp.transforms.EmitXML]]. */
   override lazy val config: Config = Config(
-    name = "CounterAccelerator",
+    name = "counter_chisel",
     description = s"Fixed-count timer",
     memoryFootprintMiB = 0,
     deviceId = 0xC,
@@ -48,7 +48,7 @@ trait CounterSpecification extends Specification {
 
 }
 
-class CounterAccelerator(dmaWidth: Int) extends Implementation(dmaWidth) with CounterSpecification {
+class counter_chisel(dmaWidth: Int) extends Implementation(dmaWidth) with CounterSpecification {
 
   override val implementationName: String = "Default"
 

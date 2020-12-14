@@ -22,7 +22,7 @@ import esp.{Config, Implementation, Parameter, Specification}
 trait AdderSpecification extends Specification {
 
   override lazy val config = Config(
-    name = "AdderAccelerator",
+    name = "adder_chisel",
     description = "Reduces a vector via addition",
     memoryFootprintMiB = 1,
     deviceId = 0xF,
@@ -35,13 +35,13 @@ trait AdderSpecification extends Specification {
 
 }
 
-object AdderAccelerator {
+object adder_chisel {
 
   private object S extends ChiselEnum {
     val Idle, DMALoad, Compute, DMAStore, Done = Value
   }
 
-  /** FFTAccelerator error codes */
+  /** adder_chisel error codes */
   object Errors extends ChiselEnum {
     val None = Value(0.U)
     val InvalidSize, Unimplemented = Value
@@ -49,12 +49,12 @@ object AdderAccelerator {
 
 }
 
-class AdderAccelerator(dmaWidth: Int) extends Implementation(dmaWidth) with AdderSpecification {
+class adder_chisel(dmaWidth: Int) extends Implementation(dmaWidth) with AdderSpecification {
   require(dmaWidth == 32)
 
-  import AdderAccelerator._
+  import adder_chisel._
 
-  override val implementationName = "AdderAccelerator"
+  override val implementationName = "adder_chisel"
 
   private val readAddr, size, writeAddr = Reg(UInt(32.W))
 

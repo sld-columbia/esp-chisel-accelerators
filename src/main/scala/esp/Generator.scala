@@ -16,15 +16,15 @@ package esp
 
 import chisel3.Driver
 
-import esp.examples.{AdderAccelerator, CounterAccelerator, DefaultFFTAccelerator}
+import esp.examples.{adder_chisel, counter_chisel, Defaultfft_chisel}
 
 object Generator {
 
   def main(args: Array[String]): Unit = {
     val examples: Seq[(String, String, () => AcceleratorWrapper)] =
-      Seq( ("CounterAccelerator", "Default", (a: Int) => new CounterAccelerator(a)),
-           ("FFTAccelerator", DefaultFFTAccelerator.architecture, (a: Int) => new DefaultFFTAccelerator(a)),
-           ("AdderAccelerator", "Default", (a: Int) => new AdderAccelerator(a) ))
+      Seq( ("counter_chisel", "Default", (a: Int) => new counter_chisel(a)),
+           ("fft_chisel", Defaultfft_chisel.architecture, (a: Int) => new Defaultfft_chisel(a)),
+           ("adder_chisel", "Default", (a: Int) => new adder_chisel(a) ))
         .flatMap( a => Seq(32).map(b => (a._1, s"${a._2}_dma$b", () => new AcceleratorWrapper(b, a._3))) )
 
     examples.map { case (name, impl, gen) =>

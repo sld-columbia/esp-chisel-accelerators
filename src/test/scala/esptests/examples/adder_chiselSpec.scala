@@ -21,18 +21,18 @@ import chisel3.tester._
 import org.scalatest.{FlatSpec, Matchers}
 
 import esp.{DmaControl, DmaSize}
-import esp.examples.AdderAccelerator
+import esp.examples.adder_chisel
 
 import esptests.AcceleratorSpec._
 
-class AdderAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matchers {
+class adder_chiselSpec extends FlatSpec with ChiselScalatestTester with Matchers {
 
-  behavior of "AdderAccelerator"
+  behavior of "adder_chisel"
 
   private def adderTest(input: Seq[Int], readAddr: Int = 0, writeAddr: Int = 0) = {
     val expectedOutput = input.foldLeft(0){ case (acc, x) => acc + x }
     it should s"""reduce [${input.mkString(",")}] to ${expectedOutput}""" in {
-      test(new AdderAccelerator(32)) { dut =>
+      test(new adder_chisel(32)) { dut =>
 
         dut.doReset()
 

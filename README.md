@@ -8,7 +8,7 @@ A concrete ESP-compliant accelerator is composed from an [`esp.Implementation`](
 
 When generating Verilog from an `esp.Implementation`, a FIRRTL annotation is emitted containing the accelerator configuration. A custom FIRRTL transform [`EmitXML`](../master/src/main/scala/esp/transforms/EmitXML.scala) will convert this configuration information to XML that the ESP framework needs.
 
-We currently provide one example accelerator, [`esp.examples.CounterAccelerator`](../master/src/main/scala/esp/examples/CounterAccelerator.scala) that always reports as being finished a run-time configurable number of cycles in the future.
+We currently provide one example accelerator, [`esp.examples.counter_chisel`](../master/src/main/scala/esp/examples/counter_chisel.scala) that always reports as being finished a run-time configurable number of cycles in the future.
 
 To build the example accelerator, simply run:
 

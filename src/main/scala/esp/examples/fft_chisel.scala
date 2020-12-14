@@ -46,7 +46,7 @@ trait FFTSpecification extends Specification {
   }
 
   override lazy val config: Config = Config(
-    name = "FFTAccelerator",
+    name = "fft_chisel",
     description = params.protoIQ.real match {
       case a: FixedPoint => s"${params.numPoints}-point ${a.getWidth}.${a.binaryPoint.get} FFT"
     },
@@ -80,14 +80,14 @@ trait FFTSpecification extends Specification {
 
 }
 
-object FFTAccelerator {
+object fft_chisel {
 
-  /** FFTAccelerator states for internal state machines */
+  /** fft_chisel states for internal state machines */
   object S extends ChiselEnum {
     val Idle, DMALoad, DMAStore, Done = Value
   }
 
-  /** FFTAccelerator error codes */
+  /** fft_chisel error codes */
   object Errors extends ChiselEnum {
     val None = Value(0.U)
     val InvalidWidth, Unimplemented = Value
@@ -99,12 +99,12 @@ object FFTAccelerator {
   * @param dmaWidth the width of the ESP DMA bus
   * @param params parameters describing the FFT
   */
-class FFTAccelerator[A <: Data : Real : BinaryRepresentation](dmaWidth: Int, val params: FFTParams[A])
+class fft_chisel[A <: Data : Real : BinaryRepresentation](dmaWidth: Int, val params: FFTParams[A])
     extends Implementation(dmaWidth) with FFTSpecification {
 
   require(params.protoIQ.real.getWidth <= 32, "This FFT has bugs for bit widths > 32 bits!")
 
-  import FFTAccelerator._
+  import fft_chisel._
 
   private def unimplemented(): Unit = {
     state := S.Done
@@ -232,8 +232,8 @@ class FFTAccelerator[A <: Data : Real : BinaryRepresentation](dmaWidth: Int, val
 }
 
 /** A 32-point 64.40 fixed point FFT accelerator */
-class DefaultFFTAccelerator(dmaWidth: Int) extends FFTAccelerator(dmaWidth, FFTParams.fixed(32, 20, 32, 32))
+class Defaultfft_chisel(dmaWidth: Int) extends fft_chisel(dmaWidth, FFTParams.fixed(32, 20, 32, 32))
 
-private[esp] object DefaultFFTAccelerator {
+private[esp] object Defaultfft_chisel {
   val architecture = "32PointFP32p20SDF"
 }

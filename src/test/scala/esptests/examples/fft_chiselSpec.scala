@@ -30,7 +30,7 @@ import chisel3.tester.internal.WriteVcdAnnotation
 import dsptools.numbers.DspComplex
 
 import esp.{DmaControl, DmaSize}
-import esp.examples.FFTAccelerator
+import esp.examples.fft_chisel
 
 import firrtl.options.OptionsException
 
@@ -42,9 +42,9 @@ import org.scalactic.Equality
 import org.scalactic.TripleEquals._
 import org.scalactic.Tolerance._
 
-class FFTAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matchers {
+class fft_chiselSpec extends FlatSpec with ChiselScalatestTester with Matchers {
 
-  private implicit class FFTAcceleratorHelpers(dut: FFTAccelerator[_]) {
+  private implicit class fft_chiselHelpers(dut: fft_chisel[_]) {
     def doReset() = {
       dut.reset.poke(true.B)
       dut.io.enable.poke(false.B)
@@ -86,13 +86,13 @@ class FFTAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matche
     }
   }
 
-  behavior of "FFTAccelerator"
+  behavior of "fft_chisel"
 
   it should "fail to elaborate for non-power-of-2 numbers of points" in {
     /* @todo: It would be better to verify that this was more than just an OptionsException */
     assertThrows[OptionsException] {
       (new ChiselStage)
-        .execute(Array.empty, Seq(ChiselGeneratorAnnotation(() => new FFTAccelerator(32, FFTParams.fixed(8, 0, 8, 3)))))
+        .execute(Array.empty, Seq(ChiselGeneratorAnnotation(() => new fft_chisel(32, FFTParams.fixed(8, 0, 8, 3)))))
     }
   }
 
@@ -100,7 +100,7 @@ class FFTAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matche
     val numPoints = 4
 
     info("errors for stride < points size")
-    test(new FFTAccelerator(32, FFTParams.fixed(32, 16, 32, numPoints))){ dut =>
+    test(new fft_chisel(32, FFTParams.fixed(32, 16, 32, numPoints))){ dut =>
       dut.doReset()
       dut.io.config.get("stride").poke((numPoints - 1).U)
       dut.io.enable.poke(true.B)
@@ -111,7 +111,7 @@ class FFTAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matche
     }
 
     info("errors for stride > points size")
-    test(new FFTAccelerator(32, FFTParams.fixed(32, 16, 32, numPoints))){ dut =>
+    test(new fft_chisel(32, FFTParams.fixed(32, 16, 32, numPoints))){ dut =>
       dut.doReset()
       dut.io.config.get("stride").poke((numPoints + 1).U)
       dut.io.enable.poke(true.B)
@@ -125,7 +125,7 @@ class FFTAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matche
   it should "fail to elaborate for bit widths > 32" in {
     assertThrows[OptionsException] {
       (new ChiselStage)
-        .execute(Array.empty, Seq(ChiselGeneratorAnnotation(() => new FFTAccelerator(32, FFTParams.fixed(33, 16, 32, 8)))))
+        .execute(Array.empty, Seq(ChiselGeneratorAnnotation(() => new fft_chisel(32, FFTParams.fixed(33, 16, 32, 8)))))
     }
   }
 
@@ -135,7 +135,7 @@ class FFTAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matche
       val input       = DenseVector.fill(numPoints) { Complex(randomDouble() * 2 - 1, 0) }
       val output      = fourierTr(input).toScalaVector
 
-      test(new FFTAccelerator(32, FFTParams.fixed(width, binaryPoint, width, numPoints)))
+      test(new fft_chisel(32, FFTParams.fixed(width, binaryPoint, width, numPoints)))
         .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
           dut.doReset()
 

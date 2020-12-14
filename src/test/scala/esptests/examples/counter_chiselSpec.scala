@@ -19,15 +19,15 @@ import chisel3.tester._
 
 import org.scalatest._
 
-import esp.examples.CounterAccelerator
+import esp.examples.counter_chisel
 
-class CounterAcceleratorSpec extends FlatSpec with ChiselScalatestTester with Matchers {
+class counter_chiselSpec extends FlatSpec with ChiselScalatestTester with Matchers {
 
-  behavior of "CounterAccelerator"
+  behavior of "counter_chisel"
 
   Seq(8, 64, 512).foreach{ cycles =>
     it should s"assert done after $cycles cycles" in {
-      test(new CounterAccelerator(32)) { dut =>
+      test(new counter_chisel(32)) { dut =>
         dut.io.enable.poke(false.B)
         dut.io.dma.readControl.ready.poke(false.B)
         dut.io.dma.writeControl.ready.poke(false.B)
